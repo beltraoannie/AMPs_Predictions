@@ -85,7 +85,7 @@ class ProteinStats():
              'R', 'S', 'T', 'V', 'W', 'Y']].mode().T.sort_values(by=[0],ascending=False).iloc[:3]
         moda =  moda.reset_index()
         
-        return  [aa_stats['G'].iloc[0],
+        return  [aa_stats.iloc[:,0].iloc[0],
                 ', '.join(map(str,h_df[['C']].mode()['C'].unique())), 
                 ' '.join(aa_stats.columns.values), 
                 ', '.join(map(str,[', '.join(map(str,moda.iloc[0].values)), ";",', '.join(map(str,moda.iloc[1].values)), ";",', '.join(map(str,moda.iloc[2].values))])),

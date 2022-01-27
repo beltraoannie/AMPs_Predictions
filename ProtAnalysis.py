@@ -13,12 +13,10 @@ details = {
         
 # creating a Dataframe object 
 df = pd.DataFrame(details)
-df['Heveínas'] = ps.main('C:/Users/beltr/Documents/AMPs_Predictions/phytAMP/hevein_phytamp.fasta')
-df['Snakinas'] = ps.main('C:/Users/beltr/Documents/AMPs_Predictions/phytAMP/snakin_phytamp.fasta')
-df['Thioninas'] = ps.main('C:/Users/beltr/Documents/AMPs_Predictions/phytAMP/thionin_phytamp.fasta')
-df['LTP'] = ps.main('C:/Users/beltr/Documents/AMPs_Predictions/phytAMP/ltp_phytamp.fasta')
-df['Defesinas'] = ps.main('C:/Users/beltr/Documents/AMPs_Predictions/phytAMP/defensin_phytamp.fasta')
-df['Ciclotídeos'] = ps.main('C:/Users/beltr/Documents/AMPs_Predictions/phytAMP/ciclotide_phytamp.fasta')
+df['Heveínas'] = ps.main('C:/Users/beltr/Documents/AMPs_Predictions/Originais/hev_all_blastdbcmd_1kp_cluster100')
+df['Snakinas'] = ps.main('C:/Users/beltr/Documents/AMPs_Predictions/Originais/snak_all_blastdbcmd_1kp_cluster100')
+df['Thioninas'] = ps.main('C:/Users/beltr/Documents/AMPs_Predictions/Originais/thion_all_blastdbcmd_1kp_cluster100')
+df['LTP'] = ps.main('C:/Users/beltr/Documents/AMPs_Predictions/Originais/LTP_all_blastdbcmd_1kp_cluster100')
 
 
 df.to_csv('stast.csv')
