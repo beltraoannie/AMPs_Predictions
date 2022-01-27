@@ -13,7 +13,7 @@ class ProteinStats():
         biopython library (ProteinAnalysis), data analysis by  pandas library (pd)
     """
 
-    def fasta(file):
+    def fasta(self,path):
         """This function receives a multi-fasta file and stores only the lines containing sequences in a list
         Args:
             file ([type]): [description]
@@ -22,16 +22,18 @@ class ProteinStats():
             [type]: [description]
         """        
         sequencelst = []
+        file = open(path,'r')
         for line in file:
             try:
                 if(">" not in line):
                     sequence = str(line).replace("\n", "")
                     sequencelst.append(sequence)
-                return sequencelst
+
             except Exception as e:
                 print(e)
+        return sequencelst
 
-    def seq_to_df(list):
+    def seq_to_df(self, list):
         """This function iterates over all the sequences in the previously generated list and saves in a dataframe (table):
            Amino acid counting, size, molecular weight, gravy number and isoelectric point 
         Args:
@@ -60,13 +62,41 @@ class ProteinStats():
                 df['IP'] = IP
                 df['GVY'] = GVY
 
-                return df
             except Exception as e:
-                print(e)
+                print(e)      
+        return df
 
+    def main(self,path):
+        #Generates a list of all sequences in multifasta
+        hev = self.fasta(path)
+        #This functions runs biopython protein analyses and generates a table of the variables
+        h_df= self.seq_to_df(hev)
+        aa_stats = h_df.drop(columns=['MW','lenght','IP','GVY']).describe().T.sort_values(by=['mean'],ascending=False).drop(columns=['25%','50%','75%']).iloc[:3].T
+        for col in aa_stats.columns:
+            aa_stats[col] = aa_stats[col].astype(float).apply('{:,.2f}'.format)
+        aa_stats_sd = h_df.drop(columns=['MW','lenght','IP','GVY']).describe().T.sort_values(by=['std'],ascending=False).drop(columns=['25%','50%','75%']).iloc[:3].T
+        for col in aa_stats_sd.columns:
+            aa_stats_sd[col] = aa_stats_sd[col].astype(float).apply('{:,.2f}'.format)
+        bq_stats = h_df.drop(columns=['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q',
+            'R', 'S', 'T', 'V', 'W', 'Y','IP','GVY']).describe().T.sort_values(by=['mean'],ascending=False).drop(columns=['25%','50%','75%','count']).T
+        for col in bq_stats.columns:
+            bq_stats[col] = bq_stats[col].astype(float).apply('{:,.2f}'.format)
+        moda = h_df[['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q',
+             'R', 'S', 'T', 'V', 'W', 'Y']].mode().T.sort_values(by=[0],ascending=False).iloc[:3]
+        moda =  moda.reset_index()
+        
+        return  [aa_stats['G'].iloc[0],
+                ', '.join(map(str,h_df[['C']].mode()['C'].unique())), 
+                ' '.join(aa_stats.columns.values), 
+                ', '.join(map(str,[', '.join(map(str,moda.iloc[0].values)), ";",', '.join(map(str,moda.iloc[1].values)), ";",', '.join(map(str,moda.iloc[2].values))])),
+                ' '.join(aa_stats_sd.columns.values),
+                '±'.join([bq_stats['lenght'][0],bq_stats['lenght'][1]]),
+                bq_stats['lenght'][2],
+                bq_stats['lenght'][3],
+                '±'.join([bq_stats['MW'][0],bq_stats['MW'][1]])]
     """Graph Generation Fuctions"""
 
-    def lenght_graph(frame, xlabel, ylabel):
+    def lenght_graph(self, frame, xlabel, ylabel):
         """
         Here were defined the functions that were used for graph generation using seaborn (sns) and matplotlib (plt) libraries
         For generating frequency analysis of sequence lenght, categories were defined using the cut function, 
@@ -119,7 +149,7 @@ class ProteinStats():
         i.set_ylabels(ylabel)
         return i
 
-    def mw_graph(frame, xlabel, ylabel):
+    def mw_graph(self, frame, xlabel, ylabel):
         """*For generating frequency analysis of molecular weight (WP), 
         categories (bins) were defined at intervals ranging from 0 to the highest value (50.000 kDa) 
         found in the set the data was grouped according to the value of the WP column, 
@@ -144,7 +174,7 @@ class ProteinStats():
         m.set_xlabels(xlabel)
         m.set_ylabels(ylabel)
         return m
-    def gvy_graph(frame, xlabel, ylabel):
+    def gvy_graph(self, frame, xlabel, ylabel):
         """For generating frequency analysis of Gravy Number (GVY), 
         categories (bins) were defined according to Gravy scale, 
         ranging -2 to 2, the data was grouped according to the value of the GVY column in 13 intervals, 
